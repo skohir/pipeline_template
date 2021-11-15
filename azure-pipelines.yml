@@ -1,0 +1,32 @@
+trigger:
+    - master
+
+pool: 
+     vmImage: 'windows-latest'
+
+#Add the workspace name and users to add in the value section to deploy reports to a specific workspace 
+variables:
+  - name: Worskspace_Name_Dev
+    value: Template_Test_DEV
+  - name: Worskspace_Name_QA
+    value: Template_Test_QA
+  - name: Worskspace_Name_PROD
+    value: Template_Test_PROD
+  - name: Admin_Users
+    value: skohir@seagen.com,mmassey@seagen.com
+
+
+
+stages:
+  - template: pipeline_templates/build.yml
+  - template: pipeline_templates/release.yml
+    parameters:
+      Dev:  $(Worskspace_Name_Dev)
+      QA:  $(Worskspace_Name_QA)
+      PROD:  $(Worskspace_Name_PROD)
+      Users: $(Admin_Users)
+
+      
+
+        
+        

@@ -1,0 +1,102 @@
+
+stages: 
+- stage: 
+  jobs:
+    - job: "DevWorkspace"
+      pool:
+       vmImage: 'windows-latest'
+      steps:
+      - task: PowerBIActions@5
+        inputs:
+          PowerBIServiceEndpoint: 'PowerBI_Connection'
+          Action: 'Workspace'
+          WorkspaceName:  ${{ parameters.Dev }}
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'specific'
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: PowerBIActions@5
+        inputs:
+          PowerBIServiceEndpoint: 'PowerBI_Connection'
+          Action: 'Publish'
+          WorkspaceName: ${{ parameters.Dev }}
+          PowerBIPath: '$(System.ArtifactsDirectory)/drop/*.pbix'
+      - task: PowerBIActions@5
+        inputs:
+          PowerBIServiceEndpoint: 'PowerBI_Connection'
+          Action: 'AddUsers'
+          WorkspaceName: ${{ parameters.Dev }}
+          Users: '${{ parameters.Users }}'
+          Permission: 'Admin'
+
+- stage: Release_QA
+  jobs:
+    - deployment: "QAWorkspace"
+      displayName: "QAWorkspace_Deployment"
+      pool:
+        vmImage: 'windows-latest'
+      environment: QA
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'Workspace'
+              WorkspaceName: ${{ parameters.QA }}
+           - task: DownloadBuildArtifacts@1
+             inputs:
+               buildType: 'current'
+               downloadType: 'specific'
+               downloadPath: '$(System.ArtifactsDirectory)'
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'Publish'
+              WorkspaceName: ${{ parameters.QA }}
+              PowerBIPath: '$(System.ArtifactsDirectory)/drop/*.pbix'
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'AddUsers'
+              WorkspaceName: '${{ parameters.QA }}'
+              Users: '${{ parameters.Users }}'
+              Permission: 'Admin'
+
+
+- stage: Release_Prod
+  jobs:
+    - deployment: "ProdWorkspace"
+      displayName: "ProdWorkspace_Deployment"
+      pool:
+        vmImage: 'windows-latest'
+      environment: PROD
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'Workspace'
+              WorkspaceName: ${{ parameters.PROD }}
+           - task: DownloadBuildArtifacts@1
+             inputs:
+               buildType: 'current'
+               downloadType: 'specific'
+               downloadPath: '$(System.ArtifactsDirectory)' 
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'Publish'
+              WorkspaceName: ${{ parameters.PROD }}
+              PowerBIPath: '$(System.ArtifactsDirectory)/drop/*.pbix'
+           - task: PowerBIActions@5
+             inputs:
+              PowerBIServiceEndpoint: 'PowerBI_Connection'
+              Action: 'AddUsers'
+              WorkspaceName: ${{ parameters.PROD }}
+              Users: '${{ parameters.Users }}'
+              Permission: 'Admin'

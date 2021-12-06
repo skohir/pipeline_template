@@ -1,8 +1,8 @@
 ### Report Name
-Adcetris and Padcev (PAP Orders)
+Report Name
 
 ### Report Description 
-Used to report on PAP orders by Territory Name for GMI. This report is published to Sigma [Internal BI Workspace] https://app.sigmacomputing.com/seagen/d/Adcetris-and-Padcev-PAP-Orders-2IMCNZSyQedcEADUNp106H
+Report Description 
 
 ### Business SME
 Name <name@seagen.com> 
@@ -18,13 +18,6 @@ Name <name@seagen.com>
 
 ## Data Sources
 Platform    |  Data Source   
+
+Example:
 Snowflake   |  ods.icsi.invoice_line  
-Snowflake   |  ods.icsi.customer_master  
-Snowflake   |  ods.crm.psl_customer_link
-Snowflake   |  edw.dim.date 
-
-
- 
-
-
-
